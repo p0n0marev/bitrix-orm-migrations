@@ -1,0 +1,19 @@
+{
+  "name": "p0n0marev/bitrix-orm-migrations",
+  "license": "MIT",
+  "description": "Database migrations for Bitrix ORM",
+  "keywords": [
+    "bitrix",
+    "migrations"
+  ],
+  "authors": [
+    {
+      "name": "Sergey Ponomarev",
+      "email": "ponomarevsa@yandex.ru"
+    }
+  ],
+  "homepage": "https://github.com/p0n0marev/bitrix-orm-migrations",
+  "require": {
+    "php": ">=5.6.0"
+  }
+}
