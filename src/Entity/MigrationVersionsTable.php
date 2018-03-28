@@ -1,5 +1,5 @@
 <?php
-namespace P0n0marev\Bitrix\Migrations\Entity;
+namespace P0n0marev\BitrixMigrations\Entity;
 
 use \Bitrix\Main\Entity;
 

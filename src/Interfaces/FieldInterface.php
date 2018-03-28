@@ -1,5 +1,5 @@
 <?php
-namespace P0n0marev\Bitrix\Migrations\Interfaces;
+namespace P0n0marev\BitrixMigrations\Interfaces;
 
 /**
  * Field interface

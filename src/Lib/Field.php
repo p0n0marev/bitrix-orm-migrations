@@ -1,7 +1,7 @@
 <?php
-namespace P0n0marev\Bitrix\Migrations\Lib;
+namespace P0n0marev\BitrixMigrations\Lib;
 
-use P0n0marev\Bitrix\Migrations\Interfaces\FieldInterface;
+use P0n0marev\BitrixMigrations\Interfaces\FieldInterface;
 
 class Field implements FieldInterface
 {

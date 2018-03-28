@@ -1,8 +1,8 @@
 <?php
 
-namespace P0n0marev\Bitrix\Migrations;
-use P0n0marev\Bitrix\Migrations\Entity\MigrationVersionsTable;
-use P0n0marev\Bitrix\Migrations\Lib\Field;
+namespace P0n0marev\BitrixMigrations;
+use P0n0marev\BitrixMigrations\Entity\MigrationVersionsTable;
+use P0n0marev\BitrixMigrations\Lib\Field;
 
 
 /**
@@ -329,7 +329,7 @@ class Migrate
 
 		$_template =
 			'<?php
-namespace p0n0marev\Bitrix\Migrations;
+namespace P0n0marev\BitrixMigrations;
 
 /**
  * Auto-generated Migration: Please modify to your needs!

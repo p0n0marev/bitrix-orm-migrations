@@ -1,5 +1,5 @@
 <?php
-namespace P0n0marev\Bitrix\Migrations\Lib;
+namespace P0n0marev\BitrixMigrations\Lib;
 
 abstract class AbstractMigration
 {
