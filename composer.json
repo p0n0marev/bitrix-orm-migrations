@@ -1,6 +1,6 @@
 {
   "name": "p0n0marev/bitrix-orm-migrations",
-  "license": "GPL",
+  "license": "GPL-3.0-or-later",
   "description": "Database migrations for Bitrix ORM",
   "keywords": [
     "bitrix",
