@@ -1,9 +1,10 @@
 {
   "name": "p0n0marev/bitrix-orm-migrations",
-  "license": "MIT",
+  "license": "GPL",
   "description": "Database migrations for Bitrix ORM",
   "keywords": [
     "bitrix",
+    "d7",
     "migrations"
   ],
   "authors": [
