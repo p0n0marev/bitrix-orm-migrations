@@ -1,9 +1,10 @@
 <?php
 
 namespace P0n0marev\BitrixMigrations;
+
 use P0n0marev\BitrixMigrations\Entity\MigrationVersionsTable;
 use P0n0marev\BitrixMigrations\Lib\Field;
-
+use \Bitrix\Main\Entity;
 
 /**
  * Миграции структуры БД на основе ORM Битрикс
@@ -18,7 +19,7 @@ class Migrate
 	/** @var array список классов сущностей */
 	private $managers = [];
 
-    public function __construct($directory)
+	public function __construct($directory)
 	{
 		$this->setDirectory($directory);
 
@@ -95,6 +96,7 @@ class Migrate
 						$down[] = $to->getDropQuery();
 					}
 				}
+				
 			}
 
 		}
@@ -123,9 +125,9 @@ class Migrate
 	}
 
 
-    /**
-     * @return array
-     */
+	/**
+	 * @return array
+	 */
 	public function getNewMigrations()
 	{
 		$installed = [];
@@ -245,7 +247,9 @@ class Migrate
 			  COLUMN_NAME,
 			  COLUMN_COMMENT,
 			  DATA_TYPE,
-			  COLUMN_TYPE
+			  COLUMN_TYPE,
+			  COLUMN_KEY,
+			  EXTRA
 			FROM information_schema.COLUMNS
 			WHERE TABLE_NAME = '" . $sqlHelper->forSql($tableName, 200) . "'
 		";
@@ -258,12 +262,19 @@ class Migrate
 			$field->setName($record['COLUMN_NAME']);
 			$field->setTitle($record['COLUMN_COMMENT']);
 
+			$type = '';
+
 			// как в Bitrix\Main\DB\MysqlCommonSqlHelper::getColumnTypeByField(Entity\ScalarField $field)
 			if ($record['DATA_TYPE'] == 'int') {
-				$field->setType('int');
+				$type = 'int';
 			} else {
-				$field->setType($record['COLUMN_TYPE']);
+				$type = $record['COLUMN_TYPE'];
 			}
+
+			if ($record['COLUMN_KEY'] == 'EXTRA')
+				$type .= ' AUTO_INCREMENT ';
+
+			$field->setType($type);
 
 			$result[$record['COLUMN_NAME']] = $field;
 		}
@@ -291,7 +302,14 @@ class Migrate
 			$field->setTableName($entity->getDBTableName());
 			$field->setName($fieldOrm->getName());
 			$field->setTitle($fieldOrm->getTitle());
-			$field->setType($sqlHelper->getColumnTypeByField($fieldOrm));
+			$field->setType();
+
+			$type = $sqlHelper->getColumnTypeByField($fieldOrm);
+
+			if ($fieldOrm->isAutocomplete())
+				$type .= ' AUTO_INCREMENT ';
+
+			$field->setType($type);
 
 			$result[$fieldOrm->getName()] = $field;
 
@@ -301,8 +319,8 @@ class Migrate
 	}
 
 	/**
-     * Вернет каталог для хранения миграций
-     * Каталог будет создан если не существует
+	 * Вернет каталог для хранения миграций
+	 * Каталог будет создан если не существует
 	 * @return string
 	 */
 	public function getDirectory()
@@ -329,7 +347,7 @@ class Migrate
 
 		$_template =
 			'<?php
-namespace P0n0marev\BitrixMigrations;
+namespace P0n0marev\BitrixMigrations\Lib;
 
 /**
  * Auto-generated Migration: Please modify to your needs!
