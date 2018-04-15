@@ -17,11 +17,14 @@ class Migrate
 	private $sqlHelper = null;
 	private $directory = null;
 	/** @var array список классов сущностей */
-	private $managers = [];
+	private $managers = null;
 
-	public function __construct($directory)
+	public function __construct()
 	{
-		$this->setDirectory($directory);
+		$this->setDirectory($path = \Bitrix\Main\Application::getDocumentRoot()
+			. DIRECTORY_SEPARATOR . 'local'
+			. DIRECTORY_SEPARATOR . 'migrations'
+		);
 
 		$connection = $this->getConnection();
 		if (!$connection->isTableExists(MigrationVersionsTable::getEntity()->getDBTableName())) {
@@ -41,6 +44,8 @@ class Migrate
 
 		$managers = $this->getManagers();
 		foreach ($managers as $manager) {
+
+			$manager = new $manager();
 
 			/** $entity таблица */
 			$entity = $manager->getEntity();
@@ -96,7 +101,7 @@ class Migrate
 						$down[] = $to->getDropQuery();
 					}
 				}
-				
+
 			}
 
 		}
@@ -214,6 +219,39 @@ class Migrate
 	 */
 	public function getManagers()
 	{
+
+		if ($this->managers == null) {
+			$path = \Bitrix\Main\Application::getDocumentRoot()
+				. DIRECTORY_SEPARATOR . 'local'
+				. DIRECTORY_SEPARATOR . 'modules';
+
+			$allFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+			$phpFiles = new \RegexIterator($allFiles, '/\.php$/');
+			foreach ($phpFiles as $phpFile) {
+				$content = file_get_contents($phpFile->getRealPath());
+				$tokens = token_get_all($content);
+				$namespace = '';
+				for ($index = 0; isset($tokens[$index]); $index++) {
+					if (!isset($tokens[$index][0])) {
+						continue;
+					}
+					if (T_NAMESPACE === $tokens[$index][0]) {
+						$index += 2; // Skip namespace keyword and whitespace
+						while (isset($tokens[$index]) && is_array($tokens[$index])) {
+							$namespace .= $tokens[$index++][1];
+						}
+					}
+					if (T_CLASS === $tokens[$index][0]) {
+						$index += 2; // Skip class keyword and whitespace
+						$className = $namespace . '\\' . $tokens[$index][1];
+						if (is_subclass_of($className, Entity\DataManager::class)) {
+							$this->managers[] = $namespace . '\\' . $tokens[$index][1];
+						}
+					}
+				}
+			}
+		}
+
 		return $this->managers;
 	}
 
@@ -302,7 +340,6 @@ class Migrate
 			$field->setTableName($entity->getDBTableName());
 			$field->setName($fieldOrm->getName());
 			$field->setTitle($fieldOrm->getTitle());
-			$field->setType();
 
 			$type = $sqlHelper->getColumnTypeByField($fieldOrm);
 
