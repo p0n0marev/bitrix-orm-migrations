@@ -9,15 +9,12 @@ class Field implements FieldInterface
 	private $tableName;
 	/** @var string имя поля */
 	private $name;
-	/** @var string заголовок */
-	private $title;
 	/** @var string тип данных */
 	private $type;
 
 	public function equals(FieldInterface $field)
 	{
 		if ($this->getName() != $field->getName()) return false;
-		if ($this->getTitle() != $field->getTitle()) return false;
 
 		// если поле в базе помечено как blob не меняем его тип
 		if ($this->getType() == 'blob' && strpos($field->getType(), 'varchar') !== false) return true;
@@ -55,22 +52,6 @@ class Field implements FieldInterface
 	public function setName($name)
 	{
 		$this->name = $name;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getTitle()
-	{
-		return $this->title;
-	}
-
-	/**
-	 * @param string $title
-	 */
-	public function setTitle($title = null)
-	{
-		$this->title = $title;
 	}
 
 	/**
@@ -128,10 +109,6 @@ class Field implements FieldInterface
 		$query .= ' `' . $field->getName() . '` ';
 		$query .= " " . $field->getType() . " ";
 
-		if ($field->getTitle()) {
-			$query .= " COMMENT '" . $field->getTitle() . "' ";
-		}
-
 		return $query;
 	}
 
@@ -150,10 +127,6 @@ class Field implements FieldInterface
 			$query .= " blob ";
 		} else {
 			$query .= " " . $field->getType() . " ";
-		}
-
-		if ($field->getTitle()) {
-			$query .= " COMMENT '" . $field->getTitle() . "' ";
 		}
 
 		return $query;

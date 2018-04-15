@@ -283,7 +283,6 @@ class Migrate
 		$sql = "
 			SELECT
 			  COLUMN_NAME,
-			  COLUMN_COMMENT,
 			  DATA_TYPE,
 			  COLUMN_TYPE,
 			  COLUMN_KEY,
@@ -298,7 +297,6 @@ class Migrate
 			$field = new Field();
 			$field->setTableName($tableName);
 			$field->setName($record['COLUMN_NAME']);
-			$field->setTitle($record['COLUMN_COMMENT']);
 
 			$type = '';
 
@@ -339,7 +337,6 @@ class Migrate
 			$field = new Field();
 			$field->setTableName($entity->getDBTableName());
 			$field->setName($fieldOrm->getName());
-			$field->setTitle($fieldOrm->getTitle());
 
 			$type = $sqlHelper->getColumnTypeByField($fieldOrm);
 

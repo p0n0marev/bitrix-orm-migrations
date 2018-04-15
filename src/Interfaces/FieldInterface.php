@@ -16,10 +16,6 @@ interface FieldInterface
 
 	public function getName();
 
-	public function setTitle($title = null);
-
-	public function getTitle();
-
 	public function setType($type);
 
 	public function getType();
