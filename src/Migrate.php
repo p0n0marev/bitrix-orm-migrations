@@ -126,7 +126,7 @@ class Migrate
 	{
 		$new = $this->getNewMigrations();
 
-		print sprintf('Новых миграций: %d', count($new));
+		print sprintf("Новых миграций: %d\n", count($new));
 	}
 
 
@@ -154,7 +154,22 @@ class Migrate
 	}
 
 	/**
-	 *
+	 * @return array
+	 */
+	public function getLastMigration()
+	{
+		$rs = MigrationVersionsTable::getList([
+			'select' => ['VERSION'],
+			'order' => ['VERSION' => 'ASC'],
+			'limit' => 1,
+		]);
+		if ($m = $rs->fetch()) {
+			return $m['VERSION'];
+		}
+	}
+
+	/**
+	 * Запустить миграцию
 	 */
 	public function migrate()
 	{
@@ -189,6 +204,42 @@ class Migrate
 			$this->saveVersion($version);
 		}
 
+	}
+
+	/**
+	 * Откатить миграцию
+	 */
+	public function rollback()
+	{
+		$connection = $this->getConnection();
+
+		$version = $this->getLastMigration();
+
+
+			$namespace = '\\';
+
+			$filePath = $this->getDirectory() . DIRECTORY_SEPARATOR . 'Version' . $version . '.php';
+			$content = file_get_contents($filePath);
+
+			foreach (explode("\n", $content) as $l) {
+				if (strpos($l, 'namespace') !== false) {
+
+					$l = str_replace(';', '', $l);
+					$l = str_replace('namespace', '', $l);
+					$l = trim($l);
+					$namespace = '\\' . $l;
+					break;
+				}
+			}
+
+			require $this->getDirectory() . DIRECTORY_SEPARATOR . 'Version' . $version . '.php';
+
+			$class = $namespace . '\Version' . $version;
+			$migrate = new $class();
+
+			$migrate->down($connection);
+
+			$this->deleteVersion($version);
 	}
 
 	/**
@@ -437,6 +488,11 @@ class Version<version> extends AbstractMigration
 	private function saveVersion($version)
 	{
 		MigrationVersionsTable::add(['VERSION' => $version]);
+	}
+
+	private function deleteVersion($version)
+	{
+		MigrationVersionsTable::delete($version);
 	}
 
 }
