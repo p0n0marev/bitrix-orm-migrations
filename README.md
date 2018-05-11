@@ -23,10 +23,10 @@ use \Symfony\Component\Console\Application;
 require __DIR__ . '/../vendor/autoload.php';
 
 $application = new Application();
-$application->add(new \P0n0marev\BitrixMigrations\Command());
-$application->add(new \P0n0marev\BitrixMigrations\Command());
-$application->add(new \P0n0marev\BitrixMigrations\Command());
-$application->add(new \P0n0marev\BitrixMigrations\Command());
+$application->add(new \P0n0marev\BitrixMigrations\Command\DiffCommand());
+$application->add(new \P0n0marev\BitrixMigrations\Command\MigrateCommand());
+$application->add(new \P0n0marev\BitrixMigrations\Command\RollbackCommand());
+$application->add(new \P0n0marev\BitrixMigrations\Command\StatusCommand());
 $application->run();
 ```
 
