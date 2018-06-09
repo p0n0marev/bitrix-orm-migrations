@@ -16,6 +16,7 @@ class Migrate
 	private $connection = null;
 	private $sqlHelper = null;
 	private $directory = null;
+	private $dataManagersDirectory = null;
 	/** @var array список классов сущностей */
 	private $managers = null;
 
@@ -272,9 +273,7 @@ class Migrate
 	{
 
 		if ($this->managers == null) {
-			$path = \Bitrix\Main\Application::getDocumentRoot()
-				. DIRECTORY_SEPARATOR . 'local'
-				. DIRECTORY_SEPARATOR . 'modules';
+			$path = $this->dataManagersDirectory;
 
 			$allFiles = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
 			$phpFiles = new \RegexIterator($allFiles, '/\.php$/');
@@ -295,12 +294,23 @@ class Migrate
 					if (T_CLASS === $tokens[$index][0]) {
 						$index += 2; // Skip class keyword and whitespace
 						$className = $namespace . '\\' . $tokens[$index][1];
+
+						if($className == 'Fleetcare\Portal\Auto\MileageTable') {
+							print is_subclass_of($className, Entity\DataManager::class);
+							print $className."\n";
+						}
+
 						if (is_subclass_of($className, Entity\DataManager::class)) {
 							$this->managers[] = $namespace . '\\' . $tokens[$index][1];
 						}
 					}
 				}
 			}
+		}
+
+		print 1;
+		foreach ($this->managers as $manager) {
+			print $manager."\n";
 		}
 
 		return $this->managers;
@@ -425,6 +435,11 @@ class Migrate
 	public function setDirectory($directory)
 	{
 		$this->directory = $directory;
+	}
+
+	public function setDataManagersDirectory($dataManagersDirectory)
+	{
+		$this->dataManagersDirectory = $dataManagersDirectory;
 	}
 
 	private function generateMigration($version, $up = [], $down = [])
